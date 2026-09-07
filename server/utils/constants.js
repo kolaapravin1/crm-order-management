@@ -1,0 +1,82 @@
+// Central place for enums / controlled vocabularies used across models & workflow logic.
+
+const ROLES = {
+  SUPERADMIN: "SUPERADMIN",
+  ADMIN: "ADMIN",
+};
+
+// Ordered list = the only forward path. Index order matters for transition checks.
+const WORKFLOW_STAGES = [
+  "ORDER_CREATED",
+  "PHOTO_VERIFICATION",
+  "DESIGN",
+  "PRODUCTION",
+  "QC",
+  "PACKING",
+  "DELIVERY",
+  "COMPLETED",
+];
+
+// Non-linear "revision" states reachable only from specific stages, and which
+// stage they return to on success.
+const REVISION_STAGES = {
+  PHOTO_REJECTED: "PHOTO_VERIFICATION",
+  PRODUCTION_REWORK: "PRODUCTION",
+};
+
+const ALL_STAGES = [...WORKFLOW_STAGES, ...Object.keys(REVISION_STAGES)];
+
+// Map of stage -> stages it may legally transition to.
+const STAGE_TRANSITIONS = {
+  ORDER_CREATED: ["PHOTO_VERIFICATION"],
+  PHOTO_VERIFICATION: ["DESIGN", "PHOTO_REJECTED", "PRODUCTION"],
+  PHOTO_REJECTED: ["PHOTO_VERIFICATION"],
+  DESIGN: ["PRODUCTION"],
+  PRODUCTION: ["QC"],
+  QC: ["PACKING", "PRODUCTION_REWORK"],
+  PRODUCTION_REWORK: ["QC"],
+  PACKING: ["DELIVERY"],
+  DELIVERY: ["COMPLETED"],
+  COMPLETED: [],
+};
+
+const PAYMENT_STATUSES = ["PENDING", "PARTIAL", "PAID", "FAILED", "REFUNDED"];
+
+const DELIVERY_STATUSES = [
+  "PENDING",
+  "SHIPPED",
+  "IN_TRANSIT",
+  "OUT_FOR_DELIVERY",
+  "DELIVERED",
+  "DELIVERY_FAILED",
+];
+
+const PHOTO_VERIFICATION_STATUSES = ["PENDING", "VERIFIED", "REJECTED"];
+
+const PRODUCTION_STATUSES = [
+  "NOT_STARTED",
+  "STARTED",
+  "IN_PROGRESS",
+  "COMPLETED",
+];
+
+const QC_STATUSES = ["PENDING", "PASSED", "FAILED"];
+
+const PACKING_STATUSES = ["PENDING", "PACKED"];
+
+const APPROVAL_STATUSES = ["PENDING", "APPROVED", "REJECTED"];
+
+module.exports = {
+  ROLES,
+  WORKFLOW_STAGES,
+  REVISION_STAGES,
+  ALL_STAGES,
+  STAGE_TRANSITIONS,
+  PAYMENT_STATUSES,
+  DELIVERY_STATUSES,
+  PHOTO_VERIFICATION_STATUSES,
+  PRODUCTION_STATUSES,
+  QC_STATUSES,
+  PACKING_STATUSES,
+  APPROVAL_STATUSES,
+};
